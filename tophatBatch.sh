@@ -4,7 +4,7 @@ for i in $SCRATCH/*R1*.fastq; do
 echo $i
 echo ${i/R1/R2}
 
-cat <<EOM > ${i/R1_001.fastq/''}.slurm
+cat <<EOM > ${i/R1_001.fastq/'tophat'}.slurm
 #!/bin/bash
 #SBATCH --job-name=tophatbatch
 #
