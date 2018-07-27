@@ -20,6 +20,7 @@ module load bowtie2
 module load tophat
 module load cufflinks
 
+cd ${i/'accepted_hits.bam'/}
 cufflinks $i 
 
 EOM
