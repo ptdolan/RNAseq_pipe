@@ -4,23 +4,30 @@
 ########################
 ########################
 
-#devtools::install_github("stephenturner/annotables")
-library(annotables)
+installPKGS<-function(){
+  source("https://bioconductor.org/biocLite.R")
+  biocLite("biomaRt")
+  biocLite("devtools")
+  biocLite("rhdf5")
+  biocLite("limma")
+  devtools::install_github("stephenturner/annotables")
+  devtools::install_github("pachterlab/sleuth")
+  biocLite("Biostrings")
+  install.packages(c("dplyr","reshape2","ggplot2","data.table","biomartr"))
+}
 
-#source("https://bioconductor.org/biocLite.R")
-biocLite("biomaRt")
-
+library(dplyr)
+library(sleuth)
 library(reshape2)
 library(ggplot2)
 library(data.table)
 library(biomaRt)
 library(biomartr)
-library(sleuth)
 library(limma)
-library(dplyr)
 
-kalDirRoot<-"/Users/ptdolan/Desktop/mNSC_KallistoAnalysis/"
+#######################################################################
 
+kalDirRoot<-"/Users/ptdolan/Desktop/mNSC_KallistoAnalysis/KallistoOutputs/"
 
 #######################################################################
 #   BioMart
@@ -31,16 +38,8 @@ mart <- biomaRt::useMart(biomart = "ENSEMBL_MART_ENSEMBL",verbose = T,
                          host = "uswest.ensembl.org")
 
 bmIDs <- biomaRt::getBM(
-  attributes = c("external_gene_name","refseq_mrna_predicted","refseq_mrna"),
+  attributes = c("ensembl_gene_name","refseq_mrna_predicted","refseq_mrna"),
   mart = mart)
-
-match1<-bmIDs[(bmIDs$refseq_mrna_predicted%in%strsplit2(Diff_sleuth_table$target_id,"\\.")[,1]),c(1,2)]
-colnames(match1)<-c("external_gene_name","refseq_mrna")
-match2<-bmIDs[(bmIDs$refseq_mrna%in%strsplit2(Diff_sleuth_table$target_id,"\\.")[,1]),c(1,3)]
-mapping<-rbind(match1,match2)
-colnames(mapping)<-c("gene_id","refseq_gene")
-
-SO$obs_raw
 
 #######################################################################
 #   SLEUTH
@@ -60,7 +59,7 @@ input<-data.table(sample=paste(age,exp,sep = "-"),
                   path=kalDirs[c(-1,-14)])
 
 # Initialize sleuth object
-SO<-sleuth_prep(input,target_mapping = mapping,aggregation_column = "gene_id")
+SO<-sleuth_prep(input,read_bootstrap_tpm=T,extra_bootstrap_summary=T)
 
 # Fit models
 SO <- sleuth_fit(SO, ~age+diff, 'full' )
@@ -95,6 +94,8 @@ write.csv(AgeDiff_sleuth_significant,file = "mNSC_AgeDiff_Sig-q05.csv")
 # PHN analysis 
 ########################################################################
 sleuth_save(SO,"~/GitHub/mNSC_differentiation.sleuth")
+
+sleuth_live(SO)
 
 mergedData<-merge(SO$obs_raw,SO$sample_to_covariates,by="sample")
 mergedData$refseq_gene<-strsplit2(mergedData$target_id,split = "\\.")[,1]
