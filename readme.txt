@@ -1,6 +1,7 @@
 This directory contains the scripts used to map and analyze RNAseq data in batch on a cluster (specifically written with for slurm job submission on sherlock.stanford.edu. 
  
-Two options currently, tophat2-bowtie2-cufflinks pipeline, or the Kallisto-Sleuth pipeline.
+Two options currently, tophat2-bowtie2-cufflinks pipeline (slow), or the Kallisto-Sleuth pipeline (fast).
+
 
 
 Instructions:
@@ -38,14 +39,13 @@ This will generate all of the slurm command files for cufflinks based on the fol
 > done
 
 
-
-
 ---------------------------------------
-2A. Kallisto - alignment and counting
+2A. Kallisto - alignment and counting on Cluster
 ---------------------------------------
+Kallisto Manual: https://pachterlab.github.io/kallisto
 
 1. Move all fastq files to $SCRATCH on cluster (faster I/O)
-2. From within $SCRATCH directory (or dir where fastq's live), run tophatBatch.sh.
+2. From within $SCRATCH directory (or dir where fastq's live), run 'tophatBatch.sh' .
   > sh /path/to/kallistoBatch.sh
 
 This will generate all of the slurm command files for the directory listed in the *Batch.sh file.
@@ -54,11 +54,16 @@ This will generate all of the slurm command files for the directory listed in th
   > for i in *kallisto.slurm; do
   > sbatch $i
   > done
+
   
 ---------------------------------------
 2B. Sleuth - analysis
 ---------------------------------------
+Sleuth Manual: https://pachterlab.github.io/sleuth/about
 
-1. Place all "KallistoOutput/" directories
-2. Edit SleuthAnalysis.R to match your file directory and experimental structure. 
+1. Place all "KallistoOutput/" directories into same parent directory.
+2. Edit SleuthAnalysis.R to match your file directory and experimental model structure. 
+3. Run Sleuth to generate P-values. 
+
+
 
