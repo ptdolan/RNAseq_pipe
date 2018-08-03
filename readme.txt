@@ -52,7 +52,7 @@ This will generate all of the slurm command files for cufflinks based on the fol
 #######################################
 
 ---------------------------------------
-2A. Kallisto index - alignment and counting on Cluster
+2A. Kallisto index - index generation on Cluster
 ---------------------------------------
 
 1. Kallisto requires an indexed representation of the target DNA to align to. To generate the index, edit the 'kallistoIndex.sh' file to point to your target fasta/fa.gz.
