@@ -140,11 +140,10 @@ modelAnnot<-function(model){
   genesDF<-merge.data.frame(model,data.frame(stringsAsFactors = F,annotables::grcm38_tx2gene),by="ensgene")
   annotDF<-merge(genesDF,annotables::grcm38,by="ensgene")
   annot.DF<-merge(annotDF,allNames,by="symbol",all.x = T)
-  annot.DF$qval[annot.DF$qval<1E-50]<-1e-50
+  annot.DF$qval[annot.DF$qval<1E-25]<-1e-25
   return(annot.DF)
-  print("values limited to 1E-50")
+  print("values limited to 1E-25")
 }
-
 
 model=SO$tests$lrt$`age:full`
 LRTannot<-modelAnnot(model)
@@ -155,35 +154,33 @@ WTannot<-modelAnnot(model)
 ggplot(WTannot)+
   geom_pointrange(aes(qval,b,ymin=(b-se_b),ymax=(b+se_b),col=set))+scale_x_log10()
 
-ggplot(WTannot[!is.na(WTannot$set),])+geom_hline(yintercept=0)+geom_vline(xintercept=1e-50)+
-  geom_pointrange(aes(qval,b,ymin=(b-se_b),ymax=b+se_b,alpha=qval<0.01,col=subset))+
-  geom_text(data=WTannot[!is.na(WTannot$set)&WTannot$qval<0.01,],aes(qval,b,label=symbol))+
-  scale_x_log10()+facet_wrap(~subset)
+ggplot(WTannot[!is.na(WTannot$set),])+geom_hline(yintercept=0)+geom_vline(xintercept=25, lty=2)+
+  geom_pointrange(aes(-log10(qval),b,ymin=(b-se_b),ymax=b+se_b,alpha=qval<0.01,col=subset))+
+  geom_text(data=WTannot[!is.na(WTannot$set)&WTannot$qval<0.01,],aes(-log10(qval),b,label=symbol))+
+  facet_wrap(~subset)
 
 ggsave(file="~/GitHub/RNAseq_pipe/all.pdf",
 ggplot(WTannot[!is.na(WTannot$set),])+
-  geom_pointrangeh(aes(b,qval,xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=set))+
+  geom_pointrangeh(aes(b,-log10(qval),xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=set))+
   geom_vline(xintercept=0)+
-  geom_hline(yintercept=1e-50)+
-  geom_text(data=WTannot[!is.na(WTannot$set)&WTannot$qval<0.01,],aes(b,qval,label=symbol))+
-  scale_y_log10()
+  geom_hline(yintercept=1e-25,lty=2)+
+  geom_text(data=WTannot[!is.na(WTannot$set)&WTannot$qval<0.01,],aes(b,-log10(qval),label=symbol))
 )
 
 ggsave(file="~/GitHub/RNAseq_pipe/PSM.pdf",
 ggplot(WTannot[WTannot$set=="Proteasome"&(!is.na(WTannot$set)),])+
-  geom_pointrangeh(aes(b,qval,xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=set))+
+  geom_pointrangeh(aes(b,-log10(qval),xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=set))+
   geom_vline(xintercept=0)+
-  geom_hline(yintercept=1e-50)+
-  geom_text(data=WTannot[WTannot$set=="Proteasome"&WTannot$qval<0.01,],aes(b,qval,label=symbol))+
-  scale_y_log10()
+  geom_hline(yintercept=1e-25,lty=2)+
+  geom_text(data=WTannot[WTannot$set=="Proteasome"&WTannot$qval<0.01,],aes(b,-log10(qval),label=symbol))
 )
 
 ggsave(file="~/GitHub/RNAseq_pipe/Chaps_grid.pdf",height=8,width=4,
 ggplot(WTannot[WTannot$set=="Chaperone"&(!is.na(WTannot$set))&(WTannot$subset!=""),])+
   geom_pointrangeh(aes(b,qval,xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=subset))+
   geom_vline(xintercept=0)+
-  geom_hline(yintercept=1e-50)+
-  geom_text(nudge_x = .3,cex=2,data=unique(WTannot[WTannot$set=="Chaperone"&(!is.na(WTannot$set))&(WTannot$subset!=""),-19]),aes(b,qval,label=symbol))+
+  geom_hline(yintercept=1e-25,lty=2)+
+  geom_text(nudge_x = .3,cex=1.8,data=unique(WTannot[WTannot$set=="Chaperone"&(!is.na(WTannot$set))&(WTannot$subset!=""),-19]),aes(b,-log10(qval),label=symbol))+
   scale_y_log10()+facet_grid(subset~.,scales = 'free_y')+scale_color_brewer(palette = "Dark2")+xlim(-4,NA)
 )
 
@@ -191,18 +188,18 @@ ggsave(file="~/GitHub/RNAseq_pipe/Chaps.pdf",height=4,width=5,
        ggplot(WTannot[WTannot$set=="Chaperone"&(!is.na(WTannot$set))&(WTannot$subset!=""),])+
          geom_pointrangeh(aes(b,qval,xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=subset))+
          geom_vline(xintercept=0)+
-         geom_hline(yintercept=1e-50)+
-         geom_text(nudge_x = .3,cex=2.3,data=unique(WTannot[WTannot$set=="Chaperone"&(!is.na(WTannot$set))&(WTannot$subset!=""),-19]),aes(b,qval,label=symbol))+
+         geom_hline(yintercept=1e-25)+
+         geom_text(nudge_x = .3,cex=2.3,data=unique(WTannot[WTannot$set=="Chaperone"&(!is.na(WTannot$set))&(WTannot$subset!=""),-19]),aes(b,-log10(qval),label=symbol))+
          scale_y_log10()+scale_color_brewer(palette = "Dark2")+xlim(-4,NA)
 )
 
 
-ggsave(file="/GitHub/RNAseq_pipe/Ubiq.pdf",height=3,width=4,
+ggsave(file="~/GitHub/RNAseq_pipe/Ubiq.pdf",height=3,width=4,
 ggplot(WTannot[WTannot$set=="Ubiquitin"&(!is.na(WTannot$set)),])+
-  geom_pointrangeh(aes(b,qval,xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=set))+
+  geom_pointrangeh(aes(b,-log10(qval),xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=set))+
   geom_vline(xintercept=0)+
-  geom_hline(yintercept=1e-50)+
-  geom_text(data=unique(WTannot[!is.na(WTannot$set)&WTannot$set=="Ubiquitin"&WTannot$qval<0.01,-19]),aes(b,qval,label=symbol))+
+  geom_hline(yintercept=1e-25)+
+  geom_text(data=unique(WTannot[!is.na(WTannot$set)&WTannot$set=="Ubiquitin"&WTannot$qval<0.01,-19]),aes(b,-log10(qval),label=symbol))+
   scale_y_log10()
 )
 
@@ -226,16 +223,31 @@ ggplot(annot.DF[!is.na(annot.DF$set),])+geom_boxplot(aes(set,tpm,col=diff))+scal
 ggplot(annot.DF[!is.na(annot.DF$subset),])+geom_boxplot(aes(subset,tpm,col=diff))+scale_y_log10()
 
 #ggsave(width= 6,height=6,filename = "SmoothedRPB.pdf",
-ggplot(mergedDF[!is.na(mergedDF$subset),])+
-  geom_line(aes(diff,scaled_reads_per_base,group=target_id),alpha=0.3)+
-  geom_line(data = mergedDF[!is.na(mergedDF$subset)&mergedDF$qval<0.01,],aes(diff,scaled_reads_per_base,group=target_id,col=subset))+
-  geom_violin(mapping = aes(x = factor(diff),y=scaled_reads_per_base,color=subset,group=diff))+
-  geom_boxplot(mapping = aes(x = factor(diff),y=scaled_reads_per_base,color=subset,group=diff),width=0.5)+
-  facet_grid(subset~set,scales = "free_y")+
-  #geom_smooth(mapping = aes(diff,scaled_reads_per_base,color=subset,group=subset),method = "lm")+
-  #coord_cartesian(ylim = c(1,100000))+
-  scale_y_log10()+
-  theme_pubr()+scale_color_brewer(palette="Dark2")
+ggsave("~/GitHub/RNAseq_pipe/RPB_ChangePlot.pdf",width=7, height=5,
+  ggplot(mergedDF[!is.na(mergedDF$subset),])+
+    geom_line(aes(diff,scaled_reads_per_base,group=target_id),alpha=0.3)+
+    geom_line(data = mergedDF[!is.na(mergedDF$subset)&mergedDF$qval<0.01,],aes(diff,scaled_reads_per_base,group=target_id,col=subset))+
+    #geom_violin(mapping = aes(x = factor(diff),y=scaled_reads_per_base,color=subset,group=diff))+
+    geom_boxplot(cex=.5,mapping = aes(x = factor(diff),y=scaled_reads_per_base,fill=subset,group=diff),width=0.3)+
+    facet_grid(set~subset,scales = "free_y")+
+    #geom_smooth(mapping = aes(diff,scaled_reads_per_base,color=subset,group=subset),method = "lm")+
+    #coord_cartesian(ylim = c(1,100000))+
+    scale_y_log10()+
+    theme_bw()+scale_color_brewer(palette="Dark2")+scale_fill_brewer(palette="Dark2")
+  )
+
+ggsave("~/GitHub/RNAseq_pipe/TPM_ChangePlot.pdf",width=7, height=5,
+       ggplot(mergedDF[!is.na(mergedDF$subset),])+
+         geom_line(aes(diff,tpm,group=target_id),alpha=0.3)+
+         geom_line(data = mergedDF[!is.na(mergedDF$subset)&mergedDF$qval<0.01,],aes(diff,tpm,group=target_id,col=subset))+
+         #geom_violin(mapping = aes(x = factor(diff),y=scaled_reads_per_base,color=subset,group=diff))+
+         geom_boxplot(cex=.5,mapping = aes(x = factor(diff),y=tpm,fill=subset,group=diff),width=0.3)+
+         facet_grid(set~subset,scales = "free_y")+
+         #geom_smooth(mapping = aes(diff,scaled_reads_per_base,color=subset,group=subset),method = "lm")+
+         #coord_cartesian(ylim = c(1,100000))+
+         scale_y_log10()+
+         theme_bw()+scale_color_brewer(palette="Dark2")+scale_fill_brewer(palette="Dark2")
+)
 
 means<-dcast(annot.DF,symbol~diff,value.var=c("tpm"),fun.aggregate=mean)
 sds<-dcast(annot.DF,symbol~diff,value.var=c("tpm"),fun.aggregate=sd)
