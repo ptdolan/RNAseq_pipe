@@ -266,7 +266,7 @@ ggplot()+geom_abline(slope=1)+theme_bw()+
 means<-dcast(annot.DF,symbol~diff,value.var=c("scaled_reads_per_base"),fun.aggregate=mean)
 sds<-dcast(annot.DF,symbol~diff,value.var=c("scaled_reads_per_base"),fun.aggregate=sd)
 annot<-dcast(annot.DF,symbol~diff,value.var=c("subset"),fun.aggregate=function(X){as.character(X[1])})
-qvals<-dcast(mergedDF$Z,symbol~diff,value.var=c("qval"),fun.aggregate=mean)
+qvals<-dcast(mergedDF,symbol~diff,value.var=c("qval"),fun.aggregate=mean)
 
 ggsave("~/GitHub/RNAseq_pipe/Diff_meanRPB_Scatter.pdf",width=6,height=5,
        ggplot()+geom_abline(slope=1)+theme_bw()+
@@ -284,3 +284,4 @@ ggsave(filename = "~/GitHub/RNAseq_pipe/SmoothedCount.pdf",width=6,height=5,
          facet_wrap(~subset)+
          geom_smooth(mapping = aes(diff,scaled_reads_per_base,color=subset,group=subset),method = "lm", lwd=2)+scale_y_log10()+theme_pubr()+scale_color_brewer(palette="Spectral")
 )
+
