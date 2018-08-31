@@ -159,7 +159,7 @@ ggplot(WTannot[!is.na(WTannot$set),])+geom_hline(yintercept=0)+geom_vline(xinter
   geom_text(data=WTannot[!is.na(WTannot$set)&WTannot$qval<0.01,],aes(-log10(qval),b,label=symbol))+
   facet_wrap(~subset)
 
-ggsave(file="~/GitHub/RNAseq_pipe/all.pdf",
+ggsave(file="~/GitHub/RNAseq_pipe/all.pdf",width=6,height=5,
 ggplot(WTannot[!is.na(WTannot$set),])+
   geom_pointrangeh(aes(b,-log10(qval),xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=set))+
   geom_vline(xintercept=0)+
@@ -167,7 +167,7 @@ ggplot(WTannot[!is.na(WTannot$set),])+
   geom_text(data=WTannot[!is.na(WTannot$set)&WTannot$qval<0.01,],aes(b,-log10(qval),label=symbol))
 )
 
-ggsave(file="~/GitHub/RNAseq_pipe/PSM.pdf",
+ggsave(file="~/GitHub/RNAseq_pipe/PSM.pdf",width=6,height=5,
 ggplot(WTannot[WTannot$set=="Proteasome"&(!is.na(WTannot$set)),])+
   geom_pointrangeh(aes(b,-log10(qval),xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=set))+
   geom_vline(xintercept=0)+
@@ -177,20 +177,20 @@ ggplot(WTannot[WTannot$set=="Proteasome"&(!is.na(WTannot$set)),])+
 
 ggsave(file="~/GitHub/RNAseq_pipe/Chaps_grid.pdf",height=8,width=4,
 ggplot(WTannot[WTannot$set=="Chaperone"&(!is.na(WTannot$set))&(WTannot$subset!=""),])+
-  geom_pointrangeh(aes(b,qval,xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=subset))+
+  geom_pointrangeh(aes(b,-log10(qval),xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=subset))+
   geom_vline(xintercept=0)+
   geom_hline(yintercept=1e-25,lty=2)+
   geom_text(nudge_x = .3,cex=1.8,data=unique(WTannot[WTannot$set=="Chaperone"&(!is.na(WTannot$set))&(WTannot$subset!=""),-19]),aes(b,-log10(qval),label=symbol))+
-  scale_y_log10()+facet_grid(subset~.,scales = 'free_y')+scale_color_brewer(palette = "Dark2")+xlim(-4,NA)
+  facet_grid(subset~.,scales = 'free_y')+scale_color_brewer(palette = "Dark2")+xlim(-4,NA)
 )
 
 ggsave(file="~/GitHub/RNAseq_pipe/Chaps.pdf",height=4,width=5,
        ggplot(WTannot[WTannot$set=="Chaperone"&(!is.na(WTannot$set))&(WTannot$subset!=""),])+
-         geom_pointrangeh(aes(b,qval,xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=subset))+
+         geom_pointrangeh(aes(b,-log10(qval),xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=subset))+
          geom_vline(xintercept=0)+
          geom_hline(yintercept=1e-25)+
          geom_text(nudge_x = .3,cex=2.3,data=unique(WTannot[WTannot$set=="Chaperone"&(!is.na(WTannot$set))&(WTannot$subset!=""),-19]),aes(b,-log10(qval),label=symbol))+
-         scale_y_log10()+scale_color_brewer(palette = "Dark2")+xlim(-4,NA)
+        scale_color_brewer(palette = "Dark2")+xlim(-4,NA)
 )
 
 
@@ -199,8 +199,7 @@ ggplot(WTannot[WTannot$set=="Ubiquitin"&(!is.na(WTannot$set)),])+
   geom_pointrangeh(aes(b,-log10(qval),xmin=(b-se_b),xmax=b+se_b,alpha=qval<0.01,col=set))+
   geom_vline(xintercept=0)+
   geom_hline(yintercept=1e-25)+
-  geom_text(data=unique(WTannot[!is.na(WTannot$set)&WTannot$set=="Ubiquitin"&WTannot$qval<0.01,-19]),aes(b,-log10(qval),label=symbol))+
-  scale_y_log10()
+  geom_text(data=unique(WTannot[!is.na(WTannot$set)&WTannot$set=="Ubiquitin"&WTannot$qval<0.01,-19]),aes(b,-log10(qval),label=symbol))        -
 )
 
 
