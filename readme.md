@@ -1,12 +1,10 @@
-This directory contains the scripts used to map and analyze RNAseq data in batch on a cluster (specifically written with for slurm job submission on sherlock.stanford.edu. 
+_This directory contains the scripts used to map and analyze RNAseq data in batch on a cluster (specifically written with for slurm job submission on sherlock.stanford.edu.)_
  
-Two options currently, tophat2-bowtie2-cufflinks pipeline (slow), or the Kallisto-Sleuth pipeline (fast).
+_Two options currently, tophat2-bowtie2-cufflinks pipeline (slow), or the Kallisto-Sleuth pipeline (fast)._
 
-Instructions:
+# Tophat-Bowtie-Cufflinks Instructions:
 
----------------------------------------
 ## 1A. BOWTIE INDICES
----------------------------------------
 
 1. Bowtie requires an indexed representation of the target DNA to align to. To generate the index (here generating Long indices, see Bowtie Documentation for more info), edit the 'bowtieIndexL.sh' file to point to your target fasta/fa.gz.
 
