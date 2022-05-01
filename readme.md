@@ -5,35 +5,37 @@ Two options currently, tophat2-bowtie2-cufflinks pipeline (slow), or the Kallist
 Instructions:
 
 ---------------------------------------
-1A. BOWTIE INDICES
+## 1A. BOWTIE INDICES
 ---------------------------------------
 
 1. Bowtie requires an indexed representation of the target DNA to align to. To generate the index (here generating Long indices, see Bowtie Documentation for more info), edit the 'bowtieIndexL.sh' file to point to your target fasta/fa.gz.
 
 2. Run indexing on slurm cluster:
-	> sbatch bowtieIndexL.sh
+``` bash
+> sbatch bowtieIndexL.sh
+```
 
----------------------------------------
-1A. TOPHAT 
----------------------------------------
+## 1A. TOPHAT 
 
 1. Move all fastq files to $SCRATCH on cluster
 
 2. Edit tophatBatch.sh to point toward your input and outputs (index file, target fasta, fasts).
 
 3. From within $SCRATCH directory (or dir where fastq's live), run tophatBatch.sh.
+  ```
   > sh /path/to/tophatBatch.sh
+  ````
 
 This will generate all of the slurm command files for the directory listed in the *Batch.sh file.
 
 4. Then run:
+```
   > for i in *tophat.slurm; do
   > sbatch $i
   > done
+```
 
----------------------------------------
-1C. CUFFLINKS
----------------------------------------
+## 1C. CUFFLINKS
 
 1. Confirm that all tophat2 runs have completed, 'align_summary.txt' and 'mapped_reads.bam' should now be in the "*batchOutput/" directories where * is the sample ID info. 
 
@@ -43,11 +45,11 @@ This will generate all of the slurm command files for the directory listed in th
 This will generate all of the slurm command files for cufflinks based on the folders from tophat.
 
 3. Then run:
-
+``` bash
   > for i in *cufflinks.slurm; do
   > sbatch $i
   > done
-
+```
 
 #######################################
 
